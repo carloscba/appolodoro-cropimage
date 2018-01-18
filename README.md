@@ -1,0 +1,1 @@
+appolodoro-cropimage
