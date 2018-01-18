@@ -8,6 +8,7 @@ const CropImageUI = (props) => (
         src= { props.image }
         dragMode = 'move'
         aspectRatio={600 / 315}
+        style={{width: '100%', height: (window.innerWidth < 768) ? (450 / 2) : 450}}
         guides={false}
         modal = {true}
         background = {false}

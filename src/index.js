@@ -17,7 +17,14 @@ class AppolodoroCropImage extends Component{
   }
 
   handleCrop = () => {
-    const imageCropped = this.cropper.getCroppedCanvas().toDataURL("image/jpeg", 1.0)
+    const imageCropped = this.cropper.getCroppedCanvas({
+      width: 600,
+      height: 315,
+      minWidth: 600,
+      minHeight: 315,
+      maxWidth: 600,
+      maxHeight: 315,
+    }).toDataURL("image/jpeg", 1.0)
     this.props.onCrop(imageCropped)
   }
 
