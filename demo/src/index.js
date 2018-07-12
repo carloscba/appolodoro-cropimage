@@ -22,11 +22,15 @@ class Demo extends Component {
   handleCancel = () => {
     console.log('Cancel')
   }
+  handleStart = () => {
+    console.log('handleStart')
+  }
   
   render = () => {
     return <div>
       <h1>appolodoro-cropimage Demo</h1>
       <AppolodoroImageCrop
+        onStart = { this.handleStart } 
         onCrop = { this.handleCrop }
         onCancel = { this.handleCancel }
         image = { testImage }

@@ -39,6 +39,7 @@ class AppolodoroCropImage extends Component {
   }
 
   setImage(image, key){
+    (this.props.onStart) && this.props.onStart();
     const canvasSource = this.refs.canvasSource;
     const canvasSourceContext = canvasSource.getContext('2d');
 
@@ -160,10 +161,11 @@ class AppolodoroCropImage extends Component {
 
 AppolodoroCropImage.propTypes = {
   image: PropTypes.string.isRequired,
+  onStart:PropTypes.func,
   onCrop: PropTypes.func.isRequired,
   onCancel: PropTypes.func,
   smartcrop: PropTypes.object,
-  size: PropTypes.array.isRequired
+  size: PropTypes.array.isRequired,
 };
 
 AppolodoroCropImage.defaultProps = {
