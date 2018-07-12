@@ -31,7 +31,7 @@ class Demo extends Component {
         onCancel = { this.handleCancel }
         image = { testImage }
         size = {[600,315]}
-        
+        //Optional
         smartcrop = {
           {
             key : ''
