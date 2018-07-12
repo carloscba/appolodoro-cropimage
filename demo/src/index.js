@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {render} from 'react-dom'
-import testImage from './limbo.jpg'
+import testImage from './locro.jpg'
 
 import AppolodoroImageCrop from '../../src'
 
@@ -15,7 +15,6 @@ class Demo extends Component {
   }
 
   handleCrop = (imageData) => {
-    console.log(imageData)
     this.setState({
       image : imageData
     })
@@ -31,6 +30,14 @@ class Demo extends Component {
         onCrop = { this.handleCrop }
         onCancel = { this.handleCancel }
         image = { testImage }
+        size = {[600,315]}
+        //Optional
+        smartcrop = {
+          {
+            key : ''
+          }
+        }
+        
       />
 
       <img src={ this.state.image } />
