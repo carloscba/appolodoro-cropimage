@@ -25,6 +25,9 @@ class Demo extends Component {
   handleStart = () => {
     console.log('handleStart')
   }
+  handleError = (error) => {
+    console.log('error', error)
+  }
   
   render = () => {
     return <div>
@@ -32,13 +35,14 @@ class Demo extends Component {
       <AppolodoroImageCrop
         onStart = { this.handleStart } 
         onCrop = { this.handleCrop }
+        onError = { this.handleError }
         onCancel = { this.handleCancel }
         image = { testImage }
         size = {[600,315]}
         //Optional
         smartcrop = {
           {
-            key : ''
+            key : 'AIzaSyBSeJfCWZMYdAfC_LTn3OGtnp4NhRtQBHQ'
           }
         }
         

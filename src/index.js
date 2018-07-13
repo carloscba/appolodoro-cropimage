@@ -39,19 +39,24 @@ class AppolodoroCropImage extends Component {
   }
 
   setImage(image, key){
-    (this.props.onStart) && this.props.onStart();
-    const canvasSource = this.refs.canvasSource;
-    const canvasSourceContext = canvasSource.getContext('2d');
-
-    const base_image = new Image();
-    base_image.src = image;
-    base_image.onload = () => {
-      canvasSource.width = base_image.width
-      canvasSource.height = base_image.height
-      canvasSourceContext.drawImage(base_image, 0, 0);
-
-      this.requestVision(canvasSource, canvasSource.toDataURL("image/jpeg", 1), key);
-    }    
+    try{
+      (this.props.onStart) && this.props.onStart();
+      const canvasSource = this.refs.canvasSource;
+      const canvasSourceContext = canvasSource.getContext('2d');
+  
+      const base_image = new Image();
+      base_image.src = image;
+      base_image.onload = () => {
+        canvasSource.width = base_image.width
+        canvasSource.height = base_image.height
+        canvasSourceContext.drawImage(base_image, 0, 0);
+  
+        this.requestVision(canvasSource, canvasSource.toDataURL("image/jpeg", 1), key);
+      }    
+    }catch(error){
+      this.props.onError(error)
+    }
+    
   }
 
   requestVision(canvasSource, image, key) {
@@ -82,50 +87,56 @@ class AppolodoroCropImage extends Component {
     ).then((response) => {
       this.smartcrop(canvasSource, response)
     }).catch((error) => {
-      console.log(error)
+      this.props.onError(error)
     });
   }
 
   smartcrop = (canvasSource, visionResponse) => {
-    const HORIZONTAL = 'horizontal'
-    const VERTICAL = 'vertical'
+    try{
+      const HORIZONTAL = 'horizontal'
+      const VERTICAL = 'vertical'
+  
+      const visionData = visionResponse.data.responses
+      const vertices = visionData[0].cropHintsAnnotation.cropHints[0].boundingPoly.vertices
+  
+      let direction = null
+      if (vertices[0].x) {
+        direction = HORIZONTAL
+      }
+      if (vertices[0].y) {
+        direction = VERTICAL
+      }
+  
+      const cropSource = canvasSource.getContext('2d');
+      let cropData;
+  
+      switch (direction) {
+        case HORIZONTAL:
+          cropData = cropSource.getImageData(vertices[0].x, 0, (vertices[1].x - vertices[0].x), vertices[2].y)
+          break
+        case VERTICAL:
+          cropData = cropSource.getImageData(0, vertices[0].y, vertices[1].x, (vertices[3].y - vertices[0].y))
+          break
+        default:
+          cropData = cropSource.getImageData((canvasSource.width/4), (canvasSource.height/4), this.props.size[0], this.props.size[1])
+          break
+      }
+  
+      const canvasResult = this.refs.canvasResult
+      canvasResult.width = cropData.width
+      canvasResult.height = cropData.height
+  
+      const cropResult = canvasResult.getContext("2d");
+      cropResult.putImageData(cropData, 0, 0);
+      cropResult.width = this.props.size[0];
+      cropResult.height = this.props.size[1];
+  
+      this.props.onCrop(cropResult.canvas.toDataURL("image/jpeg", 1))      
 
-    const visionData = visionResponse.data.responses
-    const vertices = visionData[0].cropHintsAnnotation.cropHints[0].boundingPoly.vertices
-
-    let direction = null
-    if (vertices[0].x) {
-      direction = HORIZONTAL
+    }catch(error){
+      this.props.onError(error)      
     }
-    if (vertices[0].y) {
-      direction = VERTICAL
-    }
-
-    const cropSource = canvasSource.getContext('2d');
-    let cropData;
-
-    switch (direction) {
-      case HORIZONTAL:
-        cropData = cropSource.getImageData(vertices[0].x, 0, (vertices[1].x - vertices[0].x), vertices[2].y)
-        break
-      case VERTICAL:
-        cropData = cropSource.getImageData(0, vertices[0].y, vertices[1].x, (vertices[3].y - vertices[0].y))
-        break
-      default:
-        cropData = cropSource.getImageData((canvasSource.width/4), (canvasSource.height/4), this.props.size[0], this.props.size[1])
-        break
-    }
-
-    const canvasResult = this.refs.canvasResult
-    canvasResult.width = cropData.width
-    canvasResult.height = cropData.height
-
-    const cropResult = canvasResult.getContext("2d");
-    cropResult.putImageData(cropData, 0, 0);
-    cropResult.width = this.props.size[0];
-    cropResult.height = this.props.size[1];
-
-    this.props.onCrop(cropResult.canvas.toDataURL("image/jpeg", 1))
+    
 
   }
 
@@ -163,6 +174,7 @@ AppolodoroCropImage.propTypes = {
   image: PropTypes.string.isRequired,
   onStart:PropTypes.func,
   onCrop: PropTypes.func.isRequired,
+  onError : PropTypes.func.isRequired,
   onCancel: PropTypes.func,
   smartcrop: PropTypes.object,
   size: PropTypes.array.isRequired,
